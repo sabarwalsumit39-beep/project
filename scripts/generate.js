@@ -1,27 +1,15 @@
 const CryptoJS = require('crypto-js');
 const fs = require('fs');
 
-// =============================================
-// 🔑 यहाँ अपनी VALUES डालो (इन्हें याद रखना)
-// =============================================
 const PASSPHRASE = "MySuperStrongPass@2024#Secure";   
 const URL_KEY = "MyUrlKey2024";                       
-const BACKEND_URL = "https://node.yoursomahearts.com";    // ⚠️ बाद में Cloudflare URL से बदलना
+const BACKEND_URL = "https://your-site.pages.dev";    
 
-// =============================================
-// 1️⃣ अपनी Website का HTML पढ़ो
-// =============================================
 const websiteHTML = fs.readFileSync('my-website.html', 'utf8');
 
-// =============================================
-// 2️⃣ AES से Encrypt करो
-// =============================================
 const encryptedHTML = CryptoJS.AES.encrypt(websiteHTML, PASSPHRASE).toString();
 const encryptedBackendOrigin = CryptoJS.AES.encrypt(BACKEND_URL, URL_KEY).toString();
 
-// =============================================
-// 3️⃣ Output Print करो
-// =============================================
 console.log("========== 🔐 GENERATED SECRETS ==========");
 console.log("PASSPHRASE:", PASSPHRASE);
 console.log("URL_KEY:", URL_KEY);
@@ -29,7 +17,6 @@ console.log("ENCRYPTED_HTML_CIPHER:", encryptedHTML);
 console.log("ENCRYPTED_ORIGIN:", encryptedBackendOrigin);
 console.log("============================================");
 
-// Secrets को JSON में सेव करो
 const output = {
   passphrase: PASSPHRASE,
   urlKey: URL_KEY,
