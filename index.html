@@ -191,10 +191,26 @@
 
     function getBackendOrigin() {
   try {
+    // 🔍 STEP 1: Exact String Check
+    console.log("🔍 ENC_DATA_ORIGIN (Raw):", ENC_DATA_ORIGIN);
+    console.log("🔍 ENC_DATA_ORIGIN Length:", ENC_DATA_ORIGIN.length);
+    console.log("🔍 ENC_DATA_ORIGIN (JSON Stringified):", JSON.stringify(ENC_DATA_ORIGIN));
+    
+    // 🔍 STEP 2: Try to Decrypt
     const bytes = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY);
     const origin = bytes.toString(CryptoJS.enc.Utf8);
-    console.log("✅ Decrypted Origin:", origin);  // 👈 यह Line Add करो
-    console.log("🔑 ENC_DATA_ORIGIN length:", ENC_DATA_ORIGIN.length); // 👈 यह भी
+    
+    // 🔍 STEP 3: Check Decrypted Result
+    console.log("✅ Decrypted Origin (Raw):", origin);
+    console.log("✅ Decrypted Origin Length:", origin ? origin.length : "null/undefined");
+    console.log("✅ Decrypted Origin (JSON):", JSON.stringify(origin));
+    
+    // 🔍 STEP 4: Check if it's empty or null
+    if (!origin || origin.trim() === "") {
+      console.warn("⚠️ Decrypted Origin is EMPTY or only whitespace!");
+      return null;
+    }
+    
     return origin;
   } catch (e) {
     console.error("❌ Origin Decrypt Failed", e);
