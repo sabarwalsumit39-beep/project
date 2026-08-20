@@ -190,14 +190,17 @@
     let startTime = null;
 
     function getBackendOrigin() {
-      try {
-        const bytes = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY);
-        return bytes.toString(CryptoJS.enc.Utf8);
-      } catch (e) {
-        console.error("Origin Decrypt Failed", e);
-        return null;
-      }
-    }
+  try {
+    const bytes = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY);
+    const origin = bytes.toString(CryptoJS.enc.Utf8);
+    console.log("✅ Decrypted Origin:", origin);  // 👈 यह Line Add करो
+    console.log("🔑 ENC_DATA_ORIGIN length:", ENC_DATA_ORIGIN.length); // 👈 यह भी
+    return origin;
+  } catch (e) {
+    console.error("❌ Origin Decrypt Failed", e);
+    return null;
+  }
+}
 
     async function loadSecureContent() {
       const popup = document.getElementById("customPopup");
