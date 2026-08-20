@@ -1,3 +1,5 @@
 ﻿node_modules/
 generated-secrets.json
 my-website.html
+
+wrangler.jsonc
