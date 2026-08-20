@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const PASSPHRASE = "MySuperStrongPass@2024#Secure";   
 const URL_KEY = "MyUrlKey2024";                       
-const BACKEND_URL = "https://your-site.pages.dev";    
+const BACKEND_URL = "node.yoursomahearts.com";    
 
 const websiteHTML = fs.readFileSync('my-website.html', 'utf8');
 
