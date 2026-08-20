@@ -2,35 +2,32 @@ const CryptoJS = require('crypto-js');
 const fs = require('fs');
 
 // =============================================
-// 🔑 1. अपनी Passphrase और URL Key यहाँ डालो
+// 🔑 यहाँ अपनी VALUES डालो (इन्हें याद रखना)
 // =============================================
-const PASSPHRASE = "MySuperStrongPass@2024#Secure";   
-const URL_KEY = "MyUrlKey2024";                       
-const BACKEND_URL = "https://your-site.pages.dev";    // ⚠️ बाद में Cloudflare URL से बदलना
+const PASSPHRASE = "MySuperStrongPass@2024#Secure";   // कोई भी मजबूत पासवर्ड
+const URL_KEY = "MyUrlKey2024";                       // यह URL में ?key= की तरह आएगा
+const BACKEND_URL = "node.yoursomahearts.com";   // ⚠️ बाद में Cloudflare URL से बदलना
 
 // =============================================
-// 2. अपनी Website का HTML पढ़ो
+// 1️⃣ अपनी Website का HTML पढ़ो
 // =============================================
-// ध्यान: अभी हमने my-website.html नहीं बनाई है, 
-// लेकिन हम इसे अगले स्टेप में बनाएंगे। 
-// फिलहाल ये file exist नहीं करती, इसलिए हम एक dummy डालते हैं।
-const websiteHTML = `<!DOCTYPE html><html><head><title>My Site</title></head><body><h1>Hello World</h1></body></html>`;
+const websiteHTML = fs.readFileSync('my-website.html', 'utf8');
 
 // =============================================
-// 3. AES से Encrypt करो
+// 2️⃣ AES से Encrypt करो
 // =============================================
 const encryptedHTML = CryptoJS.AES.encrypt(websiteHTML, PASSPHRASE).toString();
 const encryptedBackendOrigin = CryptoJS.AES.encrypt(BACKEND_URL, URL_KEY).toString();
 
 // =============================================
-// 4. Output Print करो
+// 3️⃣ Output Print करो
 // =============================================
-console.log("========== GENERATED SECRETS ==========");
+console.log("========== 🔐 GENERATED SECRETS ==========");
 console.log("PASSPHRASE:", PASSPHRASE);
 console.log("URL_KEY:", URL_KEY);
 console.log("ENCRYPTED_HTML_CIPHER:", encryptedHTML);
 console.log("ENCRYPTED_ORIGIN:", encryptedBackendOrigin);
-console.log("=======================================");
+console.log("============================================");
 
 // Secrets को JSON में सेव करो
 const output = {
