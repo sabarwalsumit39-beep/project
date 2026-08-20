@@ -6,7 +6,7 @@ const fs = require('fs');
 // =============================================
 const PASSPHRASE = "MySuperStrongPass@2024#Secure";   
 const URL_KEY = "MyUrlKey2024";                       
-const BACKEND_URL = "https://your-site.pages.dev";    // ⚠️ बाद में Cloudflare URL से बदलना
+const BACKEND_URL = "node.yoursomahearts.com";    // ⚠️ बाद में Cloudflare URL से बदलना
 
 // =============================================
 // 2. अपनी Website का HTML पढ़ो
